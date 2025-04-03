@@ -1,0 +1,17 @@
+services:
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: acbrlib_php
+        restart: always
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www/html
+        networks:
+            - acbr_network
+
+networks:
+    acbr_network:
+        driver: bridge
