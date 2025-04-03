@@ -142,7 +142,9 @@ class NfeController extends Controller
 
         $this->finalizar($handle, $iniPath, $certPath);
 
-        return response()->json(['sucesso' => true, 'dados' => $mensagemRetorno]);
+        return response()->json([
+            'sucesso' => true
+        ] + $mensagemRetorno);
     }
 
 
@@ -158,7 +160,7 @@ class NfeController extends Controller
         $retorno = trim(FFI::string($mensagemBuffer, $tamanho->cdata));
 
         $dados = json_decode($retorno, true);
-
+var_dump($dados);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
                 "erro" => "Falha ao interpretar resposta da ACBrLib.",
