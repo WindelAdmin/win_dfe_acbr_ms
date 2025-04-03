@@ -13,6 +13,9 @@
 -   composer install
 -   docker compose up -d
 
+-   Caso precisar gerar uma nova imagem do Dockerfile rodar:
+-   docker image prune -a
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
