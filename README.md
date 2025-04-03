@@ -36,8 +36,8 @@ Antes de iniciar, certifique-se de ter os seguintes requisitos instalados:
 1. Clone este repositório:
 
     ```sh
-    git clone https://github.com/seu-repositorio.git
-    cd seu-repositorio
+    git clone https://github.com/WindelAdmin/win_dfe_acbr_ms.git
+    cd win_dfe_acbr_ms
     ```
 
 2. Instale as dependências do projeto:
