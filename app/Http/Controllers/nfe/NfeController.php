@@ -123,7 +123,8 @@ class NfeController extends Controller
             $handle[0],
             $empresa->estado->UF,
             $empresa->cpfCnpj,
-            '0',
+            // '000000000000545',
+            '000000000000057',
             $respostaBuffer,
             FFI::addr($tamanho)
         );
@@ -142,11 +143,8 @@ class NfeController extends Controller
 
         $this->finalizar($handle, $iniPath, $certPath);
 
-        return response()->json([
-            'sucesso' => true
-        ] + $mensagemRetorno);
+        return response()->json($mensagemRetorno);
     }
-
 
     private function capturarUltimoRetorno($handle)
     {
@@ -160,33 +158,46 @@ class NfeController extends Controller
         $retorno = trim(FFI::string($mensagemBuffer, $tamanho->cdata));
 
         $dados = json_decode($retorno, true);
-var_dump($dados);
+        // var_dump($dados);
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
+                "sucesso" => false,
                 "erro" => "Falha ao interpretar resposta da ACBrLib.",
                 "raw" => $retorno
             ];
         }
 
+        $resposta = [
+            "sucesso" => true,
+            "dados" => $dados
+        ];
+
         if (isset($dados['DistribuicaoDFe'])) {
             $distribuicao = $dados['DistribuicaoDFe'];
 
+            // Tratamento para o loteDistDFeInt (caso seja um array)
+            $loteDocumentos = [];
             if (isset($distribuicao['loteDistDFeInt']) && is_array($distribuicao['loteDistDFeInt'])) {
-                return [
-                    "total_documentos" => count($distribuicao['loteDistDFeInt']),
-                    "documentos" => $distribuicao['loteDistDFeInt']
-                ];
+                $loteDocumentos = $distribuicao['loteDistDFeInt'];
             }
 
-            return [
-                "dados" => $distribuicao
-            ];
+            // Tratamento para ResDFe (caso venha um ou mais resumos)
+            $resumos = [];
+            foreach ($distribuicao as $key => $value) {
+                if (strpos($key, 'ResDFe') === 0 && is_array($value)) {
+                    $resumos[] = $value;
+                }
+            }
+
+            $resposta["total_documentos"] = count($loteDocumentos) + count($resumos);
+            $resposta["documentos"] = array_merge($loteDocumentos, $resumos);
         }
 
-        return [
-            "dados" => $dados
-        ];
+        return $resposta;
     }
+
+
 
 
     private function finalizar($handle, $iniPath, $certPath)
